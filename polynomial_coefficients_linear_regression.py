@@ -4,7 +4,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 # 1: Load the dataset as x and y tensors
-data = pd.read_csv("polynomial_data.csv")
+data = pd.read_csv("inputs/polynomial_data.csv")
 x = torch.tensor(data['x'].values, dtype=torch.float32).view(-1, 1)
 y = torch.tensor(data['y'].values, dtype=torch.float32).view(-1, 1)
 
@@ -30,13 +30,13 @@ criterion = nn.MSELoss()
 
 # I tried different values for learning rate to achieve accuracy close to the analytical approach
 # I started with 0,01, and it seemed to learn a bit too slowly
-# in the end, something around 15 gives coefficient values very close to analytical approach
+# in the end, something around 1 gives coefficient values very close to analytical approach
 # However, loss is still noticeably higher compared to analytical approach
-optimizer = torch.optim.Adam(model.parameters(), lr=2)
+optimizer = torch.optim.Adam(model.parameters(), lr=1)
 
 # 4: Train the model and also print loss every 100 epochs
-# I tried different numbers of epochs, 3000 appeared to be the most optimal one
-epochs = 8900
+# I tried different numbers of epochs, 9600 appeared to be the optimal one
+epochs = 9600
 for epoch in range(epochs):
     y_pred = model(x)
     loss = criterion(y_pred, y)

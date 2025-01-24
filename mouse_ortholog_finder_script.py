@@ -1,4 +1,4 @@
-import requests, sys
+import requests
 import pandas as pd
 import mygene
 
@@ -27,7 +27,7 @@ def main():
             'Percent_Identity': percent_identity
         })
     df = pd.DataFrame(combined_data)
-    df.to_csv('Orthologs table.csv', index=False)
+    df.to_csv('outputs/Orthologs table.csv', index=False)
 
 
 def get_gene_details(list_of_gene_symbols):
@@ -48,6 +48,9 @@ def get_gene_details(list_of_gene_symbols):
     return gene_details, ensembl_ids
 
 
+# pybiomart endpoints are dead, at least they were at the moment I was doing the task
+# therefore, I did another solution using Ensembl REST API
+# it is slow because I need to also implement async requests here, something that I am happy to learn over time
 def get_mouse_ortholog(human_ensembl_ids):
     server = 'https://rest.ensembl.org'
     mg = mygene.MyGeneInfo()

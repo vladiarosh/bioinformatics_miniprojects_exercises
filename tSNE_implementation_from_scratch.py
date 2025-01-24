@@ -6,8 +6,8 @@ from sklearn.preprocessing import StandardScaler
 
 
 def main():
-    sequences_data = pd.read_csv('sequences.csv')
-    normal_data = pd.read_csv('normal_data.csv')
+    sequences_data = pd.read_csv('inputs/sequences.csv')
+    normal_data = pd.read_csv('inputs/normal_data.csv')
     x_data = normal_data.drop(columns=['label']).values
     labels_normal = normal_data['label'].values
 
@@ -20,31 +20,38 @@ def main():
     # t-SNE for question 2, for normal_data.csv
     low_dim_embedding, history = tsne(x_data_scaled, perplexity=10, iterations=600, learning_rate=300,
                                       embedding_dimensions=2, random_seed=42)
-
-    scatter = plt.scatter(low_dim_embedding[:, 0], low_dim_embedding[:, 1], c=labels_normal, cmap='viridis')
-    plt.colorbar()
-    plt.title("t-SNE Embedding")
-    unique_labels = sorted(set(labels_normal))
-    colors = scatter.cmap(scatter.norm(unique_labels))
-    legend_patches = [mpatches.Patch(color=colors[i], label=f'Label {unique_labels[i]}') for i in
-                      range(len(unique_labels))]
-    plt.legend(handles=legend_patches, title="Labels")
-    plt.show()
-
-    # # t-SNE for question 3, for sequences.csv. Just one feature here, no need to standardize.
+                                      
+    # t-SNE for question 3, for sequences.csv. Just one feature here, no need to standardize.
     sequences = sequences_data['sequence'].values
     labels = sequences_data['label'].values
     hamming_distance = compute_hamming_distance_matrix(sequences)
     low_dim_embedding_2, history_2 = tsne(hamming_distance, perplexity=100, iterations=400, learning_rate=150,
                                           embedding_dimensions=2, random_seed=42)
-    scatter = plt.scatter(low_dim_embedding_2[:, 0], low_dim_embedding_2[:, 1], c=labels, cmap='viridis')
-    plt.colorbar()
-    plt.title("t-SNE Embedding")
+    fig, axs = plt.subplots(1, 2, figsize=(12, 6))
+
+    # First t-SNE plot
+    scatter1 = axs[0].scatter(low_dim_embedding[:, 0], low_dim_embedding[:, 1], c=labels_normal, cmap='viridis')
+    axs[0].set_title("t-SNE Embedding for normal data")
+    axs[0].set_xlabel("Dimension 1")
+    axs[0].set_ylabel("Dimension 2")
+    plt.colorbar(scatter1, ax=axs[0])   
+    unique_labels = sorted(set(labels_normal))
+    colors = scatter1.cmap(scatter1.norm(unique_labels))
+    legend_patches = [mpatches.Patch(color=colors[i], label=f'Label {unique_labels[i]}') for i in range(len(unique_labels))]
+    axs[0].legend(handles=legend_patches, title="Labels")
+
+    # Second t-SNE plot
+    scatter2 = axs[1].scatter(low_dim_embedding_2[:, 0], low_dim_embedding_2[:, 1], c=labels, cmap='viridis')
+    axs[1].set_title("t-SNE Embedding for kmers")
+    axs[1].set_xlabel("Dimension 1")
+    axs[1].set_ylabel("Dimension 2")
+    plt.colorbar(scatter2, ax=axs[1])     
     unique_labels = sorted(set(labels))
-    colors = scatter.cmap(scatter.norm(unique_labels))
-    legend_patches = [mpatches.Patch(color=colors[i], label=f'Label {unique_labels[i]}') for i in
-                      range(len(unique_labels))]
-    plt.legend(handles=legend_patches, title="Labels")
+    colors = scatter2.cmap(scatter2.norm(unique_labels))
+    legend_patches = [mpatches.Patch(color=colors[i], label=f'Label {unique_labels[i]}') for i in range(len(unique_labels))]
+    axs[1].legend(handles=legend_patches, title="Labels")
+    # Show both plots
+    plt.tight_layout()  
     plt.show()
 
 
@@ -112,7 +119,7 @@ def symmetrize_affinities(pairwise_affinities: np.ndarray) -> np.ndarray:
     return symmetric_affinities
 
 
-# 4. Initialization
+# 4. Initialization of embeddings
 def initialize_embedding(data: np.ndarray, embedding_dimensions: int = 2, initialization_method: str = "random",
                          random_seed: int = None) -> np.ndarray:
     if random_seed is not None:

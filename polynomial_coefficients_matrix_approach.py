@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 
 # 1: Load data
-data = pd.read_csv("polynomial_data.csv")
+data = pd.read_csv("inputs/polynomial_data.csv")
 x = data['x'].values
 y = data['y'].values
 
